@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>注册 - Shopping Mall</title>
+    
+    <!-- 引入公共头部 -->
+    <div th:replace="fragments/head :: head"></div>
+    
+    <style>
+        body {
+            padding-top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .register-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .register-card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .register-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px 15px 0 0;
+            padding: 30px;
+        }
+        .register-body {
+            padding: 30px;
+            background: white;
+            border-radius: 0 0 15px 15px;
+        }
+        .form-check.card {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .form-check.card:hover {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        .form-check-input:checked + .card {
+            border-color: #3498db;
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        .user-type-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="register-container">
+            <div class="register-card">
+                <div class="register-header text-white text-center">
+                    <h3><i class="bi bi-person-plus"></i> 用户注册</h3>
+                    <p class="mb-0">加入Shopping Mall，开启购物之旅</p>
+                </div>
+                
+                <div class="register-body">
+                    <!-- 显示错误信息 -->
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    
+                    <!-- 注册表单 -->
+                    <form th:action="@{/register}" th:object="${user}" method="post">
+                        <!-- 用户名 -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="bi bi-person"></i> 用户名 *
+                            </label>
+                            <input type="text" class="form-control" 
+                                   id="username" th:field="*{username}" 
+                                   placeholder="请输入用户名" required>
+                            <div class="text-danger small" 
+                                 th:if="${#fields.hasErrors('username')}" 
+                                 th:errors="*{username}"></div>
+                        </div>
+                        
+                        <!-- 邮箱 -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope"></i> 邮箱 *
+                            </label>
+                            <input type="email" class="form-control" 
+                                   id="email" th:field="*{email}" 
+                                   placeholder="example@email.com" required>
+                            <div class="text-danger small" 
+                                 th:if="${#fields.hasErrors('email')}" 
+                                 th:errors="*{email}"></div>
+                        </div>
+                        
+                        <!-- 密码 -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="bi bi-lock"></i> 密码 *
+                                </label>
+                                <input type="password" class="form-control" 
+                                       id="password" th:field="*{password}" 
+                                       placeholder="至少6位字符" required>
+                                <div class="text-danger small" 
+                                     th:if="${#fields.hasErrors('password')}" 
+                                     th:errors="*{password}"></div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="confirmPassword" class="form-label">
+                                    <i class="bi bi-lock-fill"></i> 确认密码 *
+                                </label>
+                                <input type="password" class="form-control" 
+                                       id="confirmPassword" th:field="*{confirmPassword}" 
+                                       placeholder="再次输入密码" required>
+                                <div th:if="${passwordError}" 
+                                     class="text-danger small">
+                                    <span th:text="${passwordError}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 用户类型选择 -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-person-badge"></i> 用户类型 *
+                            </label>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input d-none" type="radio" 
+                                               id="userTypeUser" th:field="*{userType}" 
+                                               value="USER" checked>
+                                        <label class="form-check-label card p-3 text-center h-100" for="userTypeUser">
+                                            <div class="user-type-icon text-primary">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                            <h5>普通用户</h5>
+                                            <p class="text-muted small mb-0">
+                                                浏览和购买商品<br>
+                                                收藏喜欢的商品<br>
+                                                管理购物车和订单
+                                            </p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input d-none" type="radio" 
+                                               id="userTypeSeller" th:field="*{userType}" 
+                                               value="SELLER">
+                                        <label class="form-check-label card p-3 text-center h-100" for="userTypeSeller">
+                                            <div class="user-type-icon text-success">
+                                                <i class="bi bi-shop"></i>
+                                            </div>
+                                            <h5>商家用户</h5>
+                                            <p class="text-muted small mb-0">
+                                                发布和管理商品<br>
+                                                处理订单和发货<br>
+                                                查看销售数据统计
+                                            </p>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 其他信息 -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="fullName" class="form-label">
+                                    <i class="bi bi-card-text"></i> 姓名
+                                </label>
+                                <input type="text" class="form-control" 
+                                       id="fullName" th:field="*{fullName}" 
+                                       placeholder="请输入您的姓名">
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="phoneNumber" class="form-label">
+                                    <i class="bi bi-phone"></i> 手机号
+                                </label>
+                                <input type="tel" class="form-control" 
+                                       id="phoneNumber" th:field="*{phoneNumber}" 
+                                       placeholder="请输入手机号码">
+                            </div>
+                                <div class="col-md-6 mb-4">
+                                <label for="address" class="form-label">
+                                    <i class="bi bi-phone"></i> 地址
+                                </label>
+                                <input type="text" class="form-control" 
+                                       id="address" th:field="*{address}" 
+                                       placeholder="请输入地址（可选）">
+                            </div>
+                        </div>
+                        
+                        <!-- 用户协议 -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                <label class="form-check-label small" for="agreeTerms">
+                                    我已阅读并同意
+                                    <a href="#" class="text-decoration-none">《用户协议》</a>
+                                    和
+                                    <a href="#" class="text-decoration-none">《隐私政策》</a>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- 注册按钮 -->
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-person-plus"></i> 注册
+                            </button>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="mb-2">
+                                已有账号？<a href="/login" class="text-decoration-none">
+                                    立即登录
+                                </a>
+                            </p>
+                            <p class="mb-0">
+                                <a href="/" class="text-decoration-none">
+                                    <i class="bi bi-arrow-left"></i> 返回首页
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('注册页面已加载');
+            
+            // 用户类型选择效果
+            const userTypeCards = document.querySelectorAll('.form-check-label.card');
+            userTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const radio = this.previousElementSibling;
+                    if (radio) {
+                        radio.checked = true;
+                        
+                        // 移除所有卡片的选中样式
+                        userTypeCards.forEach(c => {
+                            c.classList.remove('border-primary');
+                            c.classList.remove('bg-primary');
+                            c.classList.remove('text-white');
+                            c.classList.add('text-dark');
+                        });
+                        
+                        // 添加当前卡片的选中样式
+                        this.classList.add('border-primary');
+                        const icon = this.querySelector('.user-type-icon');
+                        if (icon) {
+                            icon.classList.remove('text-primary', 'text-success');
+                            icon.classList.add('text-white');
+                        }
+                        this.classList.add('bg-primary');
+                        this.classList.remove('text-dark');
+                        this.classList.add('text-white');
+                    }
+                });
+            });
+            
+            // 初始化选中状态
+            const checkedRadio = document.querySelector('.form-check-input:checked');
+            if (checkedRadio) {
+                const label = checkedRadio.nextElementSibling;
+                if (label && label.classList.contains('card')) {
+                    label.classList.add('border-primary', 'bg-primary', 'text-white');
+                    label.classList.remove('text-dark');
+                    const icon = label.querySelector('.user-type-icon');
+                    if (icon) {
+                        icon.classList.remove('text-primary', 'text-success');
+                        icon.classList.add('text-white');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>测试页面</title>
+</head>
+<body>
+    <h1>测试页面</h1>
+    <p th:text="${message}"></p>
+    <p>当前时间: <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+    <p>模板路径: /templates/test/simple.html</p>
+</body>
+</html>

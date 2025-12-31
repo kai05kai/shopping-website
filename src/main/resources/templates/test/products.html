@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>商品测试页面</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <h2>商品功能测试</h2>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>当前登录用户</h4>
+                </div>
+                <div class="card-body">
+                    <p th:if="${currentUser}" class="alert alert-success">
+                        当前登录用户: <strong th:text="${currentUser}"></strong>
+                    </p>
+                    <p th:unless="${currentUser}" class="alert alert-warning">
+                        当前未登录或用户信息不可用
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4>所有商品</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>商品总数: <span class="badge bg-primary" 
+                                          th:text="${allProducts != null ? allProducts.size() : 0}"></span>
+                            </p>
+                            <div th:if="${allProducts != null and !allProducts.isEmpty()}">
+                                <ul class="list-group">
+                                    <li th:each="product : ${allProducts}" class="list-group-item">
+                                        <strong th:text="${product.name}"></strong>
+                                        <br>
+                                        <small>价格: ¥<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></small>
+                                        <span th:if="${product.user}" class="badge bg-info float-end">
+                                            所有者: <span th:text="${product.user.username}"></span>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div th:unless="${allProducts != null and !allProducts.isEmpty()}">
+                                <p class="text-muted">暂无商品</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h4>当前用户的商品</h4>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${userProducts != null}">
+                                <p>我的商品数: <span class="badge bg-success" 
+                                               th:text="${userProducts.size()}"></span>
+                                </p>
+                                <div th:if="${!userProducts.isEmpty()}">
+                                    <ul class="list-group">
+                                        <li th:each="product : ${userProducts}" class="list-group-item">
+                                            <strong th:text="${product.name}"></strong>
+                                            <br>
+                                            <small>价格: ¥<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></small>
+                                            <span class="badge bg-secondary float-end">
+                                                库存: <span th:text="${product.stockQuantity}"></span>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div th:unless="${!userProducts.isEmpty()}">
+                                    <p class="text-muted">您还没有发布任何商品</p>
+                                    <a href="/products/add" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle"></i> 添加商品
+                                    </a>
+                                </div>
+                            </div>
+                            <div th:unless="${userProducts != null}">
+                                <p class="text-muted">请先登录查看您的商品</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>测试说明</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>这个页面用于测试以下功能：</p>
+                        <ol>
+                            <li>商品与用户的关联是否正确</li>
+                            <li><code>ProductService.getProductsByUserId()</code> 方法是否正常工作</li>
+                            <li>当前登录用户是否能正确获取自己的商品</li>
+                        </ol>
+                        <p>测试步骤：</p>
+                        <ol>
+                            <li>以不同用户登录</li>
+                            <li>添加商品</li>
+                            <li>返回此页面查看商品是否与正确用户关联</li>
+                        </ol>
+                        <a href="/" class="btn btn-outline-primary">返回首页</a>
+                        <a href="/products/add" class="btn btn-primary">添加测试商品</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

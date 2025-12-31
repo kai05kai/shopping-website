@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>购物网站测试页面</h1>
+    
+    <h2>测试链接：</h2>
+    <ul>
+        <li><a href="/api/test" target="_blank">API测试接口</a></li>
+        <li><a href="/h2-console" target="_blank">H2数据库控制台</a></li>
+        <li><a href="/" target="_blank">首页</a></li>
+    </ul>
+    
+    <h2>服务器状态：</h2>
+    <div id="status">检查中...</div>
+    
+    <script>
+        // 测试API连接
+        async function testConnection() {
+            try {
+                const response = await fetch('/api/test');
+                if (response.ok) {
+                    const text = await response.text();
+                    document.getElementById('status').innerHTML = 
+                        `<p class="success">✓ 服务器正常运行</p>
+                         <p>响应内容：${text}</p>`;
+                } else {
+                    document.getElementById('status').innerHTML = 
+                        `<p class="error">✗ 服务器响应错误：${response.status}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('status').innerHTML = 
+                    `<p class="error">✗ 连接失败：${error.message}</p>`;
+            }
+        }
+        
+        // 页面加载后测试
+        window.onload = testConnection;
+    </script>
+</body>
+</html>

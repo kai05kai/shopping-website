@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle}">购物车 - Shopping Mall</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            padding-top: 56px;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .cart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .cart-card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .cart-item {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #eee;
+        }
+        .cart-item:hover {
+            background-color: #f8f9fa;
+        }
+        .cart-item-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .quantity-input {
+            width: 80px;
+            text-align: center;
+        }
+        .empty-cart {
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .summary-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .btn-checkout {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- 引入导航栏片段 -->
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-4">
+        <div class="cart-container">
+            <!-- 页面标题 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-cart3"></i> 我的购物车</h2>
+                <div class="text-muted">
+                    <span sec:authentication="name" class="fw-bold"></span>的购物车
+                </div>
+            </div>
+            
+            <!-- 显示消息 -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <!-- 购物车内容 -->
+            <div th:if="${cartItems != null and !cartItems.isEmpty()}" class="row">
+                <!-- 商品列表 -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card cart-card">
+                        <div class="card-body">
+                            <!-- 购物车商品列表 -->
+                            <div th:each="cartItem : ${cartItems}" class="cart-item py-4">
+                                <div class="row align-items-center">
+                                    <!-- 商品图片 -->
+                                    <div class="col-md-2">
+                                        <img th:src="${cartItem.product.imageUrl != null} ? 
+                                                    ${cartItem.product.imageUrl} : 
+                                                    'https://via.placeholder.com/300x200?text=No+Image'"
+                                             class="cart-item-img" 
+                                             th:alt="${cartItem.product.name}">
+                                    </div>
+                                    
+                                    <!-- 商品信息 -->
+                                    <div class="col-md-4">
+                                        <h5 class="mb-2" th:text="${cartItem.product.name}"></h5>
+                                        <p class="text-muted small mb-2" 
+                                           th:text="${cartItem.product.description != null} ? 
+                                                    ${#strings.abbreviate(cartItem.product.description, 50)} : 
+                                                    '暂无描述'">
+                                        </p>
+                                        <div class="mb-2">
+                                            <span class="badge" 
+                                                  th:class="${cartItem.product.stockQuantity > 0} ? 
+                                                           'bg-success' : 'bg-danger'">
+                                                <span th:text="${cartItem.product.stockQuantity > 0} ? 
+                                                      '有货' : '缺货'"></span>
+                                            </span>
+                                            <small class="text-muted ms-2">
+                                                库存: <span th:text="${cartItem.product.stockQuantity}"></span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 价格 -->
+                                    <div class="col-md-2 text-center">
+                                        <h5 class="text-danger mb-0">
+                                            ¥<span th:text="${#numbers.formatDecimal(cartItem.product.price, 1, 2)}"></span>
+                                        </h5>
+                                        <small class="text-muted">单价</small>
+                                    </div>
+                                    
+                                    <!-- 数量控制 -->
+                                    <div class="col-md-2">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <form th:action="@{/cart/update/{id}(id=${cartItem.id})}" 
+                                                method="post" class="d-flex" onsubmit="return updateQuantity(this, '${cartItem.id}')">
+                                                <div class="input-group input-group-sm" style="width: 120px;">
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                            onclick="changeQuantity('${cartItem.id}', -1)">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                    <input type="number" 
+                                                        class="form-control text-center quantity-input"
+                                                        id="quantity_${cartItem.id}"
+                                                        th:value="${cartItem.quantity}"
+                                                        min="1" 
+                                                        th:max="${cartItem.product.stockQuantity}"
+                                                        readonly>
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                            onclick="changeQuantity('${cartItem.id}', 1)">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                    <input type="hidden" name="quantity" id="hidden_quantity_${cartItem.id}" value="${cartItem.quantity}">
+                                                </div>
+                                                <button type="submit" style="display:none;" id="submit_${cartItem.id}"></button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 小计和操作 -->
+                                    <div class="col-md-2 text-center">
+                                        <h5 class="text-danger mb-2">
+                                            ¥<span th:text="${#numbers.formatDecimal(cartItem.subtotal, 1, 2)}"></span>
+                                        </h5>
+                                        <form th:action="@{/cart/remove/{id}(id=${cartItem.id})}" 
+                                              method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> 删除
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 清空购物车按钮 -->
+                            <div class="mt-4 text-end">
+                                <form th:action="@{/cart/clear}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-secondary" 
+                                            onclick="return confirm('确定要清空购物车吗？')">
+                                        <i class="bi bi-trash"></i> 清空购物车
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 订单摘要 -->
+                <div class="col-lg-4">
+                    <div class="card cart-card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-receipt"></i> 订单摘要</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- 用户信息 -->
+                            <div class="mb-4">
+                                <h6>收货信息</h6>
+                                <div class="text-muted small">
+                                    <div th:if="${user.fullName != null and user.fullName != ''}">
+                                        <i class="bi bi-person"></i> <span th:text="${user.fullName}"></span>
+                                    </div>
+                                    <div th:if="${user.phoneNumber != null and user.phoneNumber != ''}">
+                                        <i class="bi bi-phone"></i> <span th:text="${user.phoneNumber}"></span>
+                                    </div>
+                                    <div th:if="${user.address != null and user.address != ''}">
+                                        <i class="bi bi-geo-alt"></i> <span th:text="${user.address}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 在订单摘要部分添加 -->
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>商品总件数</span>
+                                <span th:text="${totalItemsCount} + ' 件'">0 件</span>
+                            </div>
+                            
+                            <!-- 价格明细 -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>商品总价</span>
+                                    <span>¥<span th:text="${#numbers.formatDecimal(totalPrice, 1, 2)}"></span></span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>总计</span>
+                                    <span class="cart-total">¥<span th:text="${#numbers.formatDecimal(totalPrice, 1, 2)}"></span></span>
+                                </div>
+                            </div>
+
+                            
+                            <!-- 结算按钮 -->
+                            <div class="d-grid">
+                                <form th:action="@{/cart/checkout}" method="post" onsubmit="return handleCheckout(this)">
+                                    <button type="submit" class="btn btn-checkout">
+                                        <i class="bi bi-credit-card"></i> 去结算
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <!-- 继续购物 -->
+                            <div class="text-center mt-3">
+                                <a href="/" class="text-decoration-none">
+                                    <i class="bi bi-arrow-left"></i> 继续购物
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 空购物车 -->
+            <div th:if="${cartItems == null or cartItems.isEmpty()}" class="empty-cart">
+                <div class="text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-cart-x display-1 text-muted"></i>
+                    </div>
+                    <h3 class="text-muted mb-3">购物车空空如也</h3>
+                    <p class="text-muted mb-4">快去挑选心仪的商品吧！</p>
+                    <a href="/" class="btn btn-primary btn-lg">
+                        <i class="bi bi-shop"></i> 去逛逛
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 Shopping Mall. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('购物车页面已加载');
+            
+            // 自动关闭警告框
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    if (alert.classList.contains('alert-dismissible')) {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        setTimeout(() => bsAlert.close(), 5000);
+                    }
+                });
+            }, 3000);
+        });
+
+        // 改变数量
+        function changeQuantity(cartItemId, delta) {
+            const input = document.getElementById('quantity_' + cartItemId);
+            const hiddenInput = document.getElementById('hidden_quantity_' + cartItemId);
+            let current = parseInt(input.value);
+            const max = parseInt(input.getAttribute('max'));
+            
+            // 计算新数量
+            let newQuantity = current + delta;
+            if (newQuantity < 1) newQuantity = 1;
+            if (newQuantity > max) {
+                alert('数量不能超过库存：' + max);
+                newQuantity = max;
+            }
+            
+            // 更新输入框
+            input.value = newQuantity;
+            hiddenInput.value = newQuantity;
+            
+            // 自动提交表单
+            document.getElementById('submit_' + cartItemId).click();
+        }
+
+        // 更新数量
+        function updateQuantity(form, cartItemId) {
+            const button = form.querySelector('button[type="submit"]');
+            const hiddenInput = document.getElementById('hidden_quantity_' + cartItemId);
+            
+            console.log('更新购物车项 ' + cartItemId + ' 的数量为: ' + hiddenInput.value);
+            
+            // 显示加载状态
+            if (button) {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 更新中...';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }
+            
+            return true;
+        }
+
+        // 结算功能
+        function checkout() {
+            // 使用表单提交而不是直接调用
+            const checkoutForm = document.querySelector('form[action*="/cart/checkout"]');
+            if (checkoutForm) {
+                checkoutForm.submit();
+            }
+        }
+
+        // 处理结算表单提交
+        function handleCheckout(form) {
+            // 这里可以添加结算逻辑
+            const btn = form.querySelector('.btn-checkout');
+            const originalText = btn.innerHTML;
+            
+            // 显示加载状态
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 结算中...';
+            btn.disabled = true;
+            
+            // 添加一个延迟，让用户看到加载状态
+            setTimeout(() => {
+                // 实际提交表单
+                return true;
+            }, 1000);
+            
+            return true;
+        }
+    </script>
+</body>
+</html>
