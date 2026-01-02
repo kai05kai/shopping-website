@@ -49,22 +49,40 @@ cd shopping-website
 - 管理员：系统管理
 
 ## 项目结构
-shopping-website/
-├── src/main/java/com/example/shopping_website/
-│ ├── config/ # 配置类（安全配置、数据初始化等）
-│ ├── controller/ # 控制器层
-│ ├── dto/ # 数据传输对象
-│ ├── model/ # 实体类
-│ ├── repository/ # 数据访问层
-│ ├── service/ # 业务逻辑层
-│ ├── util/ # 工具类
-│ └── ShoppingWebsiteApplication.java # 应用启动类
-├── src/main/resources/
-│ ├── templates/ # Thymeleaf模板
-│ ├── static/ # 静态资源
-│ └── application.properties # 配置文件
-└── pom.xml # Maven依赖配置
+### 项目核心目录结构
 
+- **项目根目录 (shopping-website/)**
+  - `pom.xml` - Maven项目配置文件
+  - `README.md` - 项目说明文档
+  - `LICENSE` - MIT许可证文件
+  
+- **源代码目录 (src/main/java/com/example/shopping_website/)**
+  - `config/` - 配置类
+    - `SecurityConfig.java` - Spring Security安全配置
+    - `DataInitializer.java` - 数据初始化
+    - `WebConfig.java` - Web配置
+  - `controller/` - 控制器层
+    - `AuthController.java` - 用户认证
+    - `ProductController.java` - 商品管理
+    - `CartController.java` - 购物车管理
+  - `dto/` - 数据传输对象
+  - `model/` - 实体类
+  - `repository/` - 数据访问层
+  - `service/` - 业务逻辑层
+  - `util/` - 工具类
+  - `ShoppingWebsiteApplication.java` - 应用启动类
+  
+- **资源目录 (src/main/resources/)**
+  - `application.properties` - Spring Boot配置文件
+  - `templates/` - Thymeleaf模板
+    - `auth/` - 认证相关页面
+    - `product/` - 商品相关页面
+    - `cart/` - 购物车页面
+  - `static/` - 静态资源
+    - `css/` - 样式文件
+    - `js/` - JavaScript文件
+    - `product_images/` - 商品图片
+    - `user/` - 用户相关资源
 
 ## 系统架构
 ┌─────────────────────────────────────────────────────────┐
