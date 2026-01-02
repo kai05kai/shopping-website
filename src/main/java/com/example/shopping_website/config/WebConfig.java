@@ -1,5 +1,6 @@
 package com.example.shopping_website.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -7,17 +8,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     
+    @Value("${app.upload.dir:/home/shopping-website/uploads}")
+    private String uploadDir;
+    
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 处理静态资源映射
-        registry.addResourceHandler("/product_images/**")
-                .addResourceLocations("classpath:/static/product_images/");
-        
-        // 如果还需要处理上传目录外的其他静态资源
+        // 映射上传目录到 /uploads/**
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:./uploads/", "classpath:/static/uploads/");
+                .addResourceLocations("file:" + uploadDir + "/");
         
-        // 确保其他静态资源也能访问
+        // 映射静态资源
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");
     }

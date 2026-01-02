@@ -1,21 +1,109 @@
-测试账号
-username:user1
-password:user123
+# 购物网站项目 (Shopping Website)
 
-username:user2
-password:user456
+## 快速开始
+在线演示
+应用地址: http://8.134.253.254:8080
+```bash
+ git clone https://github.com/kai05kai/shopping-website.git
+cd shopping-website
+```
 
-username:seller1
-password:seller123
+## 项目简介
+这是一个基于Spring Boot 3.1.5构建的简单购物网站项目，实现了用户认证授权、商品管理、购物车等核心电商功能。项目采用分层架构设计，使用Spring Security进行权限控制，Thymeleaf作为模板引擎，MySQL/MariaDB作为数据库。
 
-username:seller2
-password:seller456
+## 技术栈
+- **后端框架**: Spring Boot 3.1.5
+- **安全框架**: Spring Security 6
+- **数据库**: MySQL / MariaDB
+- **ORM框架**: Spring Data JPA
+- **模板引擎**: Thymeleaf
+- **前端框架**: Bootstrap 5
+- **构建工具**: Maven
+- **Java版本**: JDK 17+
+- **其他依赖**: Lombok、Validation、DevTools
 
+## 功能特性
+
+### 用户管理
+- 用户注册、登录、注销
+- 个人资料编辑
+- 密码修改
+- 多角色权限控制（用户、商家、管理员）
+
+### 商品管理
+- 商品列表展示
+- 商品搜索功能
+- 商家可添加、编辑、删除商品
+- 商品图片上传与管理
+
+### 购物车功能
+- 添加商品到购物车
+- 查看购物车
+- 修改购物车商品数量
+- 结算功能（模拟）
+
+### 权限控制
+- 基于角色的访问控制
+- 普通用户：浏览商品、管理购物车
+- 商家：管理自己的商品
+- 管理员：系统管理
+
+## 项目结构
+shopping-website/
+├── src/main/java/com/example/shopping_website/
+│ ├── config/ # 配置类（安全配置、数据初始化等）
+│ ├── controller/ # 控制器层
+│ ├── dto/ # 数据传输对象
+│ ├── model/ # 实体类
+│ ├── repository/ # 数据访问层
+│ ├── service/ # 业务逻辑层
+│ ├── util/ # 工具类
+│ └── ShoppingWebsiteApplication.java # 应用启动类
+├── src/main/resources/
+│ ├── templates/ # Thymeleaf模板
+│ ├── static/ # 静态资源
+│ └── application.properties # 配置文件
+└── pom.xml # Maven依赖配置
+
+
+## 系统架构
+┌─────────────────────────────────────────────────────────┐
+│ 表示层 (Presentation) │
+│ Thymeleaf模板 + Bootstrap 5 │
+├─────────────────────────────────────────────────────────┤
+│ 控制器层 (Controller) │
+│ Spring MVC Controllers │
+├─────────────────────────────────────────────────────────┤
+│ 业务逻辑层 (Service) │
+│ Spring Service Components │
+├─────────────────────────────────────────────────────────┤
+│ 数据访问层 (Repository) │
+│ Spring Data JPA Repositories │
+├─────────────────────────────────────────────────────────┤
+│ 数据存储层 (Database) │
+│ MySQL/MariaDB + JPA │
+└─────────────────────────────────────────────────────────┘
+
+## 环境要求
+- JDK 17+
+- Maven 3.8+
+- MySQL 8.0+ 或 MariaDB 10.5+
+
+
+## 测试账户
+商家1：seller1 / seller123
+商家2：seller2 / seller456
+用户1：user1 / user123
+用户2：user2 / user456
+
+
+## 项目完整结构
 ```
 shopping-website
 ├─ .mvn
 │  └─ wrapper
 │     └─ maven-wrapper.properties
+├─ LICENSE
 ├─ mvnw
 ├─ mvnw.cmd
 ├─ pom.xml
@@ -73,8 +161,7 @@ shopping-website
    │     │  │  └─ bootstrap.bundle.min.js
    │     │  ├─ product_images
    │     │  │  └─ uploads
-   │     │  │     ├─ default.jpg
-   │     │  │     └─ product_9.jpg
+   │     │  │     └─ default.jpg
    │     │  └─ user
    │     │     └─ images
    │     │        └─ avatar.jpg
@@ -113,3 +200,14 @@ shopping-website
                └─ shopping_website
 
 ```
+
+## 开发者信息
+学号: 202330450531
+姓名: 胡泓鑫
+课程: 《网络应用》课程作业
+
+## 版权声明
+本购物网站系统为《[网络应用]》课程作业项目。
+遵循 MIT 开源许可证，允许自由使用、修改、分发。
+
+仅供学习交流，不用于商业用途。

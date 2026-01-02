@@ -76,10 +76,11 @@ public class ProductController {
                                 ", ID: " + product.getId() + 
                                 ", 图片URL: " + product.getImageUrl());
                 
-                // 检查图片文件是否存在
+                // 检查图片文件是否存在 - 使用兼容的方法
                 String existingImage = fileUploadUtil.checkProductImageExists(product.getId());
                 if (existingImage != null) {
                     System.out.println("  图片文件存在: " + existingImage);
+                    System.out.println("  完整URL: " + fileUploadUtil.getImageUrl(existingImage));
                 } else {
                     System.out.println("  图片文件不存在");
                 }

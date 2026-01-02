@@ -32,14 +32,12 @@ public class SecurityConfig {
                     "/test-cart"
                 ).permitAll()
                 
-                // 允许静态资源访问 - 修复这里！
+                // 允许静态资源访问
                 .requestMatchers(
                     "/css/**",
                     "/js/**",
-                    "/product_images/**",
-                    "/user/images/**",
-                    "/uploads/**",
-                    "/static/**",  // 添加这行
+                    "/static/**",
+                    "/uploads/**",  // 添加上传文件的访问权限
                     "/favicon.ico"
                 ).permitAll()
                 
@@ -47,7 +45,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/products/list", 
                     "/products/details/**",
-                    "/products/**"  // 暂时允许所有商品相关访问，生产环境需要细化
+                    "/products/search"
                 ).permitAll()
                 
                 // 搜索功能允许公开访问
@@ -73,7 +71,7 @@ public class SecurityConfig {
             .exceptionHandling(exception -> exception
                 .accessDeniedPage("/access-denied")
             )
-            .csrf(csrf -> csrf.disable());  // 开发阶段先禁用CSRF，方便测试
+            .csrf(csrf -> csrf.disable());
         
         return http.build();
     }
