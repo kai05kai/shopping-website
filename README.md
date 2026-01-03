@@ -1,5 +1,15 @@
 # 购物网站项目 (Shopping Website)
 
+## 测试账户
+商家1：seller1 / seller123
+
+商家2：seller2 / seller456
+
+用户1：user1 / user123
+
+用户2：user2 / user456
+
+
 ## 快速开始
 在线演示
 应用地址: http://8.134.253.254:8080
@@ -119,13 +129,6 @@ cd shopping-website
 - JDK 17+
 - Maven 3.8+
 - MySQL 8.0+ 或 MariaDB 10.5+
-
-
-## 测试账户
-商家1：seller1 / seller123
-商家2：seller2 / seller456
-用户1：user1 / user123
-用户2：user2 / user456
 
 
 ## 项目完整结构
